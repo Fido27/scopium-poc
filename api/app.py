@@ -1,10 +1,12 @@
 import json
+from pathlib import Path
 import random
 
+from fastapi.responses import FileResponse
 import pandas as pd
 
 # from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -85,3 +87,20 @@ def logic(amount, sliderval):
             "gains_percent": gains_percent,
         }
     )
+
+STORAGE = Path("./stored_files")
+STORAGE.mkdir(exist_ok=True)
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    contents = await file.read()
+    file_path = STORAGE / file.filename
+    file_path.write_bytes(contents)
+    return {"message": "File uploaded successfully"}
+
+@app.get("/download/{filename}")
+async def download_file(filename: str):
+    file_path = STORAGE / filename
+    if not file_path.exists():
+        return {"error": "File not found"}
+    return FileResponse(file_path, media_type="application/octet-stream", filename=filename)

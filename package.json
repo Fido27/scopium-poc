@@ -19,6 +19,7 @@
     "@types/react-dom": "latest",
     "autoprefixer": "latest",
     "clsx": "latest",
+    "crypto-js": "^4.2.0",
     "eslint": "latest",
     "eslint-config-next": "^15.0.2",
     "framer-motion": "^10.18.0",
